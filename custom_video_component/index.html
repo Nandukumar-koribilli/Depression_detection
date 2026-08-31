@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #1e1e1e; padding: 10px; color: #fff; margin: 0; }
+        video { width: 480px; height: 320px; border-radius: 8px; background: #000; margin-bottom: 15px; border: 2px solid #444; }
+        .btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        button { padding: 10px 20px; font-weight: bold; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        #startBtn { background-color: #ff4b4b; }
+        #startBtn:disabled { background-color: #666; cursor: not-allowed; }
+        #stopBtn { background-color: #666; cursor: not-allowed; }
+        #stopBtn:enabled { background-color: #222; border: 1px solid #fff; cursor: pointer; }
+        #status { font-size: 14px; color: #aaa; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <video id="vid" autoplay playsinline muted></video>
+    <div class="btn-group">
+        <button id="startBtn">🔴 Start Recording</button>
+        <button id="stopBtn" disabled>⏹️ Stop & Upload</button>
+    </div>
+    <div id="status">Ready to record</div>
+
+    <script>
+        function sendMessage(type, data) {
+            window.parent.postMessage({ isStreamlitMessage: true, type: type, ...data }, "*");
+        }
+        sendMessage("streamlit:componentReady", {apiVersion: 1});
+        sendMessage("streamlit:setFrameHeight", {height: 450});
+
+        let mediaRecorder;
+        let recordedChunks = [];
+        const vid = document.getElementById('vid');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const status = document.getElementById('status');
+
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => { vid.srcObject = stream; window.localStream = stream; })
+            .catch(err => { status.innerText = "Error: " + err; status.style.color = "#ff4b4b"; });
+
+        startBtn.onclick = () => {
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(window.localStream, {mimeType: 'video/webm'});
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+            
+            mediaRecorder.onstop = () => {
+                status.innerText = "Uploading to Python Backend... Please wait.";
+                status.style.color = "#0088cc";
+                
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = () => {
+                    sendMessage("streamlit:setComponentValue", {value: reader.result});
+                    status.innerText = "✅ Upload Complete! Scroll down to analyze.";
+                    status.style.color = "#00ff88";
+                };
+            };
+            
+            mediaRecorder.start();
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            status.innerText = "Recording...";
+            status.style.color = "#ff4b4b";
+        };
+
+        stopBtn.onclick = () => {
+            mediaRecorder.stop();
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        };
+    </script>
+</body>
+</html>
