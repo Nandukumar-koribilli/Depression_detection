@@ -124,4 +124,3 @@ FFmpeg is not installed or not added to your system PATH. Verify by typing `ffmp
 
 ### `ValueError: ... Categorical(logits...) ... found invalid values: tensor([[nan...]])`
 
-Whisper is struggling with half-precision floating points on your GPU. Ensure `fp16=False` is set in the `whisper.transcribe()` function inside `app.py`.
