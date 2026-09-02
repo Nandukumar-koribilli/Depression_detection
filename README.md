@@ -114,6 +114,3 @@ enableXsrfProtection = false
 enableCORS = false
 ```
 
----
-
-### `FileNotFoundError: [WinError 2] The system cannot find the file specified` (During video upload)
