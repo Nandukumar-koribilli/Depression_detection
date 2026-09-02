@@ -119,8 +119,3 @@ enableCORS = false
 ### `FileNotFoundError: [WinError 2] The system cannot find the file specified` (During video upload)
 
 FFmpeg is not installed or not added to your system PATH. Verify by typing `ffmpeg -version` in your terminal. If it fails, install FFmpeg manually and add its `/bin` folder to your Windows Environment Variables.
-
----
-
-### `ValueError: ... Categorical(logits...) ... found invalid values: tensor([[nan...]])`
-
