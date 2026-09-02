@@ -110,4 +110,3 @@ Create a `.streamlit/config.toml` file in your project root with the following t
 
 ```toml
 [server]
-enableXsrfProtection = false
