@@ -105,8 +105,3 @@ python -m pip install --upgrade streamlit
 ---
 
 ### `AxiosError: Request failed with status code 403` on file upload
-
-Create a `.streamlit/config.toml` file in your project root with the following to bypass CORS/XSRF blocks:
-
-```toml
-[server]
