@@ -103,5 +103,3 @@ python -m pip install --upgrade streamlit
 ```
 
 ---
-
-### `AxiosError: Request failed with status code 403` on file upload
